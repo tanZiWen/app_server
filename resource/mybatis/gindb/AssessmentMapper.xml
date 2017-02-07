@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperAssessment.AssessmentMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.gindb.Assessment" id="assessmentResult">
+		<!-- <id property="id" column="id" /> -->
+		<result property="mobile" column="mobile" />
+		<result property="name" column="name" />
+		<result property="crt" column="crt" />
+		<result property="email" column="email" />
+		<result property="concat" column="concat" />		
+		<result property="score" column="score" />
+	</resultMap>
+	
+	<select id="findScore" parameterType="com.prosnav.model.gindb.Assessment" resultMap="assessmentResult">
+		select score from p_assessment where mobile=#{mobile} and name=#{name}
+	</select>
+	
+	
+	
+	<select id="findInitData"  resultMap="assessmentResult">
+		select mobile,crt,name,email, concat(q1,'||',q2,'||',q3,'||',q4,'||',q5,'||',q6,'||',
+		q7,'||',q8,'||',q9,'||',q10,'||',q11,'||',q12,'||',
+		q13,'||',q14,'||',q15,'||',q16,'||',q17,'||',q18,'||',score)
+		from p_assessment ORDER BY mobile
+	</select>
+	
+</mapper>

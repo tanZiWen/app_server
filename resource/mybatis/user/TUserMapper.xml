@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperUser.TUserMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TUser" id="userResult">
+		<id property="userId" column="USER_ID" />
+		<result property="loginName" column="LOGIN_NAME" />
+		<result property="loginPwd" column="LOGIN_PWD" />		
+		<result property="userType" column="USER_TYPE" />
+		<result property="userDictIsDel" column="USER_DICT_IS_DEL" />
+		<result property="userName" column="USER_NAME" />
+		<result property="nickName" column="NICK_NAME" />
+		<result property="idCard" column="ID_CARD" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="loginTime" column="LOGIN_TIME" />
+		<result property="riskDictLevel" column="RISK_DICT_LEVEL" />
+		<result property="icon" column="ICON" />
+		<result property="email" column="EMAIL" />
+		<result property="approve" column="APPROVE" />
+		<result property="birthday" column="BIRTHDAY" />
+		<result property="constellation" column="CONSTELLATION" />
+		<result property="zodiac" column="ZODIAC" />
+		<result property="blood" column="BLOOD" />
+		<result property="deviceId" column="DEVICE_ID" />
+		<result property="sysV" column="SYS_V" />
+		<result property="mobileDictType" column="MOBILE_DICT_TYPE" />
+		<result property="flag" column="FLAG" />
+		<result property="cardType" column="CARD_TYPE" />		
+		<result property="isDesc" column="IS_DESC" />
+		<result property="isRiskBook" column="IS_RISK_BOOK" />
+		<result property="isDeploy" column="IS_DEPLOY" />		
+		<result property="omsId" column="OMS_ID" />
+		<result property="deviceSys" column="DEVICE_SYS" />
+		<result property="isAppUser" column="IS_APPUSER" />
+		<result property="isSales" column="IS_SALES" />
+		<result property="isMsgSend" column="IS_MSG_SEND" />
+		<result property="userDictLevel" column="USER_DICT_LEVEL" />
+		
+		<association property="token" javaType="com.prosnav.model.TToken">
+			<result property="toId" column="TO_ID"/>			
+		</association>
+		
+		<association property="dict" javaType="com.prosnav.model.TDict">
+			<result property="dictId" column="DICT_ID" />
+			<result property="dictType" column="DICT_TYPE" />
+			<result property="dictValue" column="DICT_VALUE" />
+			<result property="dictDesc" column="DICT_DESC" />
+			<result property="dictFomula" column="DICT_FOMULA" />			
+			<!-- <result property="riskLevelValue" column="riskLevelValue" />
+			<result property="riskLevelDesc" column="riskLevelDesc" /> -->
+			<result property="userTypeValue" column="userTypeValue" />
+			<result property="userTypeDesc" column="userTypeDesc" />
+			<result property="mobileTypeValue" column="mobileTypeValue" />
+			<result property="mobileTypeDesc" column="mobileTypeDesc" />
+		</association>
+	</resultMap>
+	
+	<select id="findloginNameAndLoginPwd" parameterType="com.prosnav.model.TUser" resultMap="userResult">
+		select 
+			a.*,
+			c.dict_value as userTypeValue,c.dict_desc as userTypeDesc,
+			d.dict_value as mobileTypeValue,d.dict_desc as mobileTypeDesc
+			from t_user  a			
+			LEFT JOIN t_dict c on c.dict_id=a.user_type
+			LEFT JOIN t_dict d on d.dict_id=a.mobile_dict_type
+			where a.login_name=#{loginName} and a.login_pwd=#{loginPwd} and a.USER_DICT_IS_DEL = '0' and a.CARD_TYPE='idcard'
+	</select>
+	
+	
+	<select id="findUserAndPwdAndDevice" parameterType="com.prosnav.model.TUser" resultMap="userResult">
+		select user_id from t_user where LOGIN_NAME =#{loginName} and LOGIN_PWD=#{loginPwd} and DEVICE_ID=#{deviceId} and USER_DICT_IS_DEL = '0' and CARD_TYPE='idcard'
+	</select>
+	
+	<select id="findLoginName" parameterType="String" resultMap="userResult">
+		select * from t_user where LOGIN_NAME =#{loginName} and USER_DICT_IS_DEL = '0' and CARD_TYPE='idcard'
+	</select>
+	
+	<select id="findLoginNameForUser" parameterType="String" resultMap="userResult">
+		select * from t_user where LOGIN_NAME =#{loginName} and USER_DICT_IS_DEL = '0' and CARD_TYPE='idcard'
+	</select>
+	
+	<select id="findLoginNameForDict" parameterType="String" resultMap="userResult">
+		select 
+			a.*,
+			c.dict_value as userTypeValue,c.dict_desc as userTypeDesc,
+			d.dict_value as mobileTypeValue,d.dict_desc as mobileTypeDesc
+			from t_user  a			
+			LEFT JOIN t_dict c on c.dict_id=a.user_type
+			LEFT JOIN t_dict d on d.dict_id=a.mobile_dict_type
+			where a.login_name=#{loginName} and a.USER_DICT_IS_DEL = '0' and a.CARD_TYPE='idcard'
+	</select>		
+	
+	<update id="updateUser" parameterType="com.prosnav.model.TUser" >
+		update t_user set TO_ID=#{token.toId} where LOGIN_NAME =#{loginName} and LOGIN_PWD=#{loginPwd} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="updateEmailApp" parameterType="com.prosnav.model.TUser" >
+		update t_user set user_Type=#{userType},EMAIL=#{email} where LOGIN_NAME =#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<insert id="save" parameterType="com.prosnav.model.TUser">
+		insert into t_user(USER_ID,LOGIN_NAME,LOGIN_PWD,USER_TYPE,USER_DICT_IS_DEL,USER_NAME,NICK_NAME,ID_CARD,
+		CREATE_TIME,UPDATE_TIME,LOGIN_TIME,ICON,EMAIL,APPROVE,BIRTHDAY,CONSTELLATION,ZODIAC,BLOOD,DEVICE_ID,SYS_V,
+		MOBILE_DICT_TYPE,FLAG,CARD_TYPE,IS_DESC,IS_RISK_BOOK,IS_DEPLOY,OMS_ID,DEVICE_SYS,IS_APPUSER,IS_SALES,IS_MSG_SEND,USER_DICT_LEVEL
+		)
+		values(
+			#{userId},#{loginName},#{loginPwd},#{userType},#{userDictIsDel},#{userName},#{nickName},#{idCard},
+			#{createTime},#{updateTime},#{loginTime},#{icon},#{email},
+			#{approve},#{birthday},#{constellation},#{zodiac},#{blood},#{deviceId},#{sysV},
+			#{mobileDictType},#{flag},#{cardType},#{isDesc},#{isRiskBook},#{isDeploy},#{omsId},#{deviceSys},#{isAppUser},#{isSales},#{isMsgSend},#{userDictLevel}
+		)
+	</insert>
+	
+	
+	<update id="updateUserByLoginName" parameterType="com.prosnav.model.TUser" >
+		update t_user set login_name=#{newLoginName} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="updateUserByEmail" parameterType="com.prosnav.model.TUser" >
+		update t_user set email=#{email} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="updateUserByNickName" parameterType="com.prosnav.model.TUser" >
+		update t_user set nick_name=#{nickName} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="updateUserByBlood" parameterType="com.prosnav.model.TUser" >
+		update t_user set blood=#{blood} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="updateUserByLoginPwd" parameterType="com.prosnav.model.TUser" >
+		update t_user set login_pwd=#{newLoginPwd} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+	
+	<update id="uploadIcon" parameterType="com.prosnav.model.TUser">
+		update t_user set ICON=#{icon} where login_name=#{loginName} and USER_DICT_IS_DEL = '0'
+	</update>
+</mapper>

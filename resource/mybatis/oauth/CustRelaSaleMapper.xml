@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperCustRelaSale.CustRelaSaleMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.oauth.CustRelaSale" id="custRelaSaleResult">
+		<!-- <id property="id" column="id" /> -->
+		<result property="custId" column="cust_id" />
+		<result property="custCell" column="cust_cell" />
+		<result property="custIdnum" column="cust_idnum" />
+		<result property="email" column="email" />
+		<result property="salesName" column="sales_name" />
+		<result property="salesId" column="sales_id" />
+		<result property="phone" column="phone" />
+	</resultMap>
+	
+	<select id="findCustRelaSale" parameterType="com.prosnav.model.oauth.CustRelaSale" resultMap="custRelaSaleResult">
+		select cust.cust_id,cust.cust_cell,cust.cust_idnum,cust.email,sale.sales_name,sale.sales_id,users.phone from sales_cust_rel rel
+		LEFT JOIN cust_info cust ON cust.cust_id=rel.cust_id
+		LEFT JOIN sale_order sale ON sale.sales_id = rel.sales_id
+		LEFT JOIN upm_user users on users.user_id=sale.sales_id
+		where cust.cust_cell=#{custCell} and cust.cust_idnum=#{custIdnum}
+		GROUP BY cust.cust_id,cust.cust_cell,cust.cust_idnum,cust.email,sale.sales_name,sale.sales_id,users.phone
+	</select>
+	
+	<select id="findCustOrder" parameterType="com.prosnav.model.oauth.CustRelaSale" resultMap="custRelaSaleResult">
+		select a.cust_id from cust_info 
+		a LEFT JOIN
+		order_info b on a.cust_id= b.cust_no
+		where  a.cust_cell=#{custCell} and a.cust_idnum=#{custIdnum}
+	</select>
+</mapper>

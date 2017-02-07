@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperTVerifyLog.TVerifyLogMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TVerifyLog" id="verifyLogResult">
+		<id property="verifyId" column="VERIFY_ID" />
+		<result property="verifyDictType" column="VERIFY_DICT_TYPE" />
+		<result property="verifyCreateTime" column="VERIFY_CREATE_TIME" />
+		<result property="verifyFailureTime" column="VERIFY_FAILURE_TIME" />		
+		<result property="responseContent" column="RESPONSE_CONTENT" />
+		<result property="phone" column="PHONE" />
+		<result property="verifyCode" column="VERIFY_CODE" />
+		<result property="verifyState" column="VERIFY_STATE" />
+		
+		
+	</resultMap>
+	
+	<insert id="save" parameterType="com.prosnav.model.TVerifyLog">
+		insert into t_verify_log (VERIFY_ID, VERIFY_DICT_TYPE, VERIFY_CREATE_TIME, VERIFY_FAILURE_TIME, RESPONSE_CONTENT, PHONE, VERIFY_CODE, VERIFY_STATE)
+		values (#{verifyId}, #{verifyDictType}, #{verifyCreateTime}, #{verifyFailureTime}, #{responseContent}, #{phone}, #{verifyCode}, #{verifyState})
+	</insert>
+	
+	<select id="findVerifyByUserId" parameterType="com.prosnav.model.TVerifyLog" resultMap="verifyLogResult">
+		select * from t_verify_log where PHONE=#{phone} and VERIFY_state=#{verifyState} ORDER BY VERIFY_FAILURE_TIME desc limit 0,1
+	</select>
+	
+	<select id="findVerifyByUserIdAndCode" parameterType="com.prosnav.model.TVerifyLog" resultMap="verifyLogResult">
+		select * from t_verify_log where VERIFY_CODE=#{verifyCode} and PHONE=#{phone} ORDER BY VERIFY_FAILURE_TIME desc limit 0,1
+	</select>
+</mapper>

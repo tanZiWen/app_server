@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperAppUser.AppUserMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.gindb.AppUser" id="appUserResult">
+		<id property="id" column="id" />
+		<result property="name" column="name" />		
+	</resultMap>
+	
+	<select id="findAppUser" parameterType="com.prosnav.model.gindb.AppUser" resultMap="appUserResult">
+		select id,name from app_user
+	</select>
+</mapper>

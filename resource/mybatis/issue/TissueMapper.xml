@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperTissue.TissueMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TIssue" id="issueResult">
+		<id property="issueId" column="ISSUE_ID" />
+		<result property="issueDictJson" column="ISSUE_DICT_JSON" />
+		<result property="issueVersion" column="ISSUE_VERSION" />
+		<result property="issueCreateTime" column="ISSUE_CREATE_TIME" />
+		<result property="issueIsDel" column="ISSUE_IS_DEL" />
+	</resultMap>
+	
+	<select id="findIssueForList" parameterType="com.prosnav.model.TIssue" resultMap="issueResult">
+		select * from t_issue where ISSUE_IS_DEL='0'
+	</select>
+</mapper>

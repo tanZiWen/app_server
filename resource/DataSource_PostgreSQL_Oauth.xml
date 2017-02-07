@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		">
+
+	<!-- 阿里 DRUID数据库连接池 -->
+	<bean id="druidDataSourceoauth" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<!-- 数据库基本信息配置 -->
+		<property name="url" value="${url_oauth}" />
+		<property name="username" value="${username_oauth}" />
+		<property name="password" value="${password_oauth}" />
+		<property name="driverClassName" value="${driverClassName_oauth}" />
+		<property name="filters" value="${filters_oauth}" />
+		<!-- 最大并发连接数 -->
+		<property name="maxActive" value="${maxActive_oauth}" />
+		<!-- 初始化连接数量 -->
+		<property name="initialSize" value="${initialSize_oauth}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${maxWait_oauth}" />
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle" value="${minIdle_oauth}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis_oauth}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis_oauth}" />
+		<property name="validationQuery" value="${validationQuery_oauth}" />
+		<property name="testWhileIdle" value="${testWhileIdle_oauth}" />
+		<property name="testOnBorrow" value="${testOnBorrow_oauth}" />
+		<property name="testOnReturn" value="${testOnReturn_oauth}" />
+		<property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements_oauth}" />
+		<!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandoned" value="${removeAbandoned_oauth}" />
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout_oauth}" />
+		<!-- 关闭abanded连接时输出错误日志 -->
+		<property name="logAbandoned" value="${logAbandoned_oauth}" />
+	</bean>
+	
+	<bean name="transactionManageroauth"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="druidDataSourceoauth"></property>
+	</bean>	
+	
+	<bean id="sqlSessionFactoryoauth" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="druidDataSourceoauth" />
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+		<!-- mapper扫描 -->
+		<property name="mapperLocations" value="classpath:mybatis/*/*.xml"></property>
+	</bean>
+	
+	<bean id="sqlSessionTemplateoauth" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactoryoauth" />
+	</bean>
+</beans>

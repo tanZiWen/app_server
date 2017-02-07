@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperTAnswer.TAnswerMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TAnswer" id="answerResult">
+		<id property="answerId" column="ANSWER_ID" />
+		<result property="answerJson" column="ANSWER_JSON" />
+		<result property="answerCreateTime" column="ANSWER_CREATE_TIME" />
+		<result property="answerDueTime" column="ANSWER_DUE_TIME" />
+		<result property="answerDictIsDel" column="ANSWER_DICT_IS_DEL" />		
+		<result property="answerLevel" column="ANSWER_LEVEL" />
+		<result property="phone" column="PHONE" />
+		<result property="email" column="EMAIL" />		
+		<result property="cardType" column="CARD_TYPE" />
+		<result property="idCard" column="ID_CARD" />
+		<result property="dataSource" column="DATA_SOURCE" />
+		
+		<association property="issue" javaType="com.prosnav.model.TIssue">
+			<result property="issueId" column="ISSUE_ID"/>			
+		</association>
+	</resultMap>
+	
+	<select id="findAnswerByUser" parameterType="com.prosnav.model.TAnswer" resultMap="answerResult">
+		select * from t_answer where PHONE=#{phone}  and answer_dict_is_del =#{answerDictIsDel}
+		<if test="idCard!=null and idCard!=''">  
+		    and id_card=#{idCard}
+		</if>  
+	</select>
+	
+	<insert id="save" parameterType="com.prosnav.model.TAnswer">
+		INSERT into t_answer(ANSWER_ID,ISSUE_ID,answer_json,answer_create_time,answer_due_time,answer_dict_is_del,answer_level,phone,email,card_type,id_card,data_source)
+		values (#{answerId},#{issue.issueId},#{answerJson},
+		#{answerCreateTime},#{answerDueTime},'0',#{answerLevel},#{phone},#{email},#{cardType},#{idCard},#{dataSource})
+	</insert>
+</mapper>

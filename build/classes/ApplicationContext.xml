@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		">
+
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+
+	<!--controller扫描包 -->
+	<!-- 启动组件扫描，排除@Controller组件，该组件由SpringMVC配置文件扫描 -->
+	<context:component-scan base-package="com.prosnav">
+	</context:component-scan>
+
+	<!-- 访问资源文件 -->
+	<mvc:resources location="/WEB-INF/static/" mapping="/static/**" />
+	<mvc:resources location="/WEB-INF/examples/" mapping="/examples/**" />
+	<mvc:resources location="/WEB-INF/login/" mapping="/login/**" />
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<!-- <value>classpath:dbconfig.properties</value> -->
+				<value>classpath:configSystem.properties</value>
+				<value>classpath:configInfo.properties</value>
+				<value>classpath:dbconfigMySQL.properties</value>
+				<!-- <value>classpath:dbconfigPostgreSQL_Gindb.properties</value>
+				<value>classpath:dbconfigPostgreSQL_Oauth.properties</value> -->
+				<value>classpath:message.properties</value>
+				<value>classpath:parameter.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<import resource="DataSource_MySql.xml" />
+	<!--<import resource="DataSource_PostgreSQL_Gindb.xml" />
+	<import resource="DataSource_PostgreSQL_Oauth.xml" /> -->
+
+	<!-- 配置SpringMVC的视图解析器 -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+	<mvc:interceptors>
+		<!-- 国际化操作拦截器 如果采用基于（请求/Session/Cookie）则必需配置 -->
+		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />
+		<!-- 如果不定义 mvc:mapping path 将拦截所有的URL请求 -->
+		<bean class="com.prosnav.auth.AuthInterceptor"></bean>
+	</mvc:interceptors>
+</beans>

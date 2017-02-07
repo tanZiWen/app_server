@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperTempCust.TempCustMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TempCust" id="tempCustResult">
+		<id property="tempCustId" column="TEMP_CUST_ID" />
+		<result property="custJson" column="CUST_JSON" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="phone"/>
+		<result property="idCard"/>
+	</resultMap>
+	
+	<select id="findTempCustByJson" parameterType="com.prosnav.model.TempCust" resultMap="tempCustResult">
+		SELECT * FROM temp_cust where CUST_JSON like CONCAT('%',#{phone},'%') and  CUST_JSON like CONCAT('%',#{idCard},'%')
+	</select>
+</mapper>

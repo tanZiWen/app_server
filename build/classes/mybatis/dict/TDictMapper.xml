@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperTDict.TDictMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TDict" id="dictResult">
+		<id property="dictId" column="DICT_ID" />
+		<result property="dictType" column="DICT_TYPE" />
+		<result property="dictValue" column="DICT_VALUE" />
+		<result property="dictDesc" column="DICT_DESC" />
+		<result property="dictFomula" column="DICT_FOMULA" />
+		
+	</resultMap>
+	
+	<select id="findDictById" parameterType="String" resultMap="dictResult">
+		select * from t_dict where DICT_ID = #{dictId}				
+	</select>
+	
+	<select id="findDictByType" resultMap="dictResult">
+		select * from t_dict where DICT_TYPE in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">  
+		  #{item}  
+		 </foreach>  
+	</select>
+	
+</mapper>

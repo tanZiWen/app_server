@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd
+		http://code.alibabatech.com/schema/dubbo
+        http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+		">
+
+	<!-- 阿里 DRUID数据库连接池 -->
+	<bean id="druidDataSourcegindb" class="com.alibaba.druid.pool.DruidDataSource"
+		destroy-method="close">
+		<!-- 数据库基本信息配置 -->
+		<property name="url" value="${url_gindb}" />
+		<property name="username" value="${username_gindb}" />
+		<property name="password" value="${password_gindb}" />
+		<property name="driverClassName" value="${driverClassName_gindb}" />
+		<property name="filters" value="${filters_gindb}" />
+		<!-- 最大并发连接数 -->
+		<property name="maxActive" value="${maxActive_gindb}" />
+		<!-- 初始化连接数量 -->
+		<property name="initialSize" value="${initialSize_gindb}" />
+		<!-- 配置获取连接等待超时的时间 -->
+		<property name="maxWait" value="${maxWait_gindb}" />
+		<!-- 最小空闲连接数 -->
+		<property name="minIdle" value="${minIdle_gindb}" />
+		<!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${timeBetweenEvictionRunsMillis_gindb}" />
+		<!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+		<property name="minEvictableIdleTimeMillis" value="${minEvictableIdleTimeMillis_gindb}" />
+		<property name="validationQuery" value="${validationQuery_gindb}" />
+		<property name="testWhileIdle" value="${testWhileIdle_gindb}" />
+		<property name="testOnBorrow" value="${testOnBorrow_gindb}" />
+		<property name="testOnReturn" value="${testOnReturn_gindb}" />
+		<property name="maxOpenPreparedStatements" value="${maxOpenPreparedStatements_gindb}" />
+		<!-- 打开removeAbandoned功能 -->
+		<property name="removeAbandoned" value="${removeAbandoned_gindb}" />
+		<!-- 1800秒，也就是30分钟 -->
+		<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout_gindb}" />
+		<!-- 关闭abanded连接时输出错误日志 -->
+		<property name="logAbandoned" value="${logAbandoned_gindb}" />
+	</bean>
+	
+	<bean name="transactionManagergindb"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="druidDataSourcegindb"></property>
+	</bean>	
+	
+	<bean id="sqlSessionFactorygindb" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="druidDataSourcegindb" />
+		<property name="configLocation" value="classpath:mybatis/mybatis-config.xml"></property>
+		<!-- mapper扫描 -->
+		<property name="mapperLocations" value="classpath:mybatis/*/*.xml"></property>
+	</bean>
+	
+	<bean id="sqlSessionTemplategindb" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactorygindb" />
+	</bean>
+</beans>

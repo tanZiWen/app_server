@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"   
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="mapperToken.TTokenMapper">
+
+<!-- <cache eviction="LRU" type="com.prosnav.service.MybatisRedisCache" /> -->
+
+	<resultMap type="com.prosnav.model.TToken" id="tukenResult">
+		<id property="toId" column="TO_ID" />
+		<result property="tokenId" column="TOKEN_ID" />
+		<result property="validTime" column="VALID_TIME" />
+		<result property="failureTime" column="FAILURE_TIME" />
+		<result property="createTime" column="CREATE_TIME" />
+		<result property="updateTime" column="UPDATE_TIME" />
+		<result property="tokenDictIsDel" column="TOKEN_DICT_IS_DEL" />
+		<result property="currTime" />
+		<result property="newTokenId" />
+		
+		<association property="user" javaType="com.prosnav.model.TUser">
+			<result property="userId" column="USER_ID"/>
+			<result property="loginName" column="LOGIN_NAME"/>
+			<result property="loginPwd" column="LOGIN_PWD"/>
+			<result property="deviceId" column="DEVICE_ID"/>
+		</association>
+	</resultMap>
+	
+	<select id="getUserAndPwd" parameterType="com.prosnav.model.TToken" resultMap="tukenResult">
+		select a.user_id,b.token_id,a.device_id from t_user a
+		LEFT JOIN t_token b on b.user_id = a.user_id
+		where a.LOGIN_NAME=#{user.loginName} and a.login_pwd=#{user.loginPwd} and a.device_id = #{user.deviceId}
+		and b.token_dict_is_del='0' and a.CARD_TYPE='idcard' and
+		
+		<![CDATA[(#{currTime} >= b.VALID_TIME 
+		and #{currTime} <= b.FAILURE_TIME)]]> 
+	</select>
+	
+	<select id="findToken" parameterType="String" resultMap="tukenResult">
+		select b.token_id from t_user a
+		LEFT JOIN t_token b on b.user_id = a.user_id
+		where a.LOGIN_NAME=#{user.loginName} and b.token_id = #{tokenId} and b.token_dict_is_del='0' and a.CARD_TYPE='idcard'
+	</select>
+	
+	<select id="getTokenAndUser" parameterType="com.prosnav.model.TToken" resultMap="tukenResult">
+		select a.user_id from t_user a
+		LEFT JOIN t_token b on b.user_id = a.user_id
+		where a.LOGIN_NAME=#{user.loginName} and b.token_id=#{tokenId}
+		and b.token_dict_is_del=#{tokenDictIsDel} and a.CARD_TYPE='idcard' and
+		
+		<![CDATA[(#{currTime} >= b.VALID_TIME 
+		and #{currTime} <= b.FAILURE_TIME)]]> 
+	</select>
+	
+	<insert id="add" parameterType="com.prosnav.model.TToken">
+		INSERT into 
+	t_token(TO_ID,USER_ID,TOKEN_ID,VALID_TIME,FAILURE_TIME,CREATE_TIME,UPDATE_TIME,TOKEN_DICT_IS_DEL)
+	values (#{toId},#{user.userId},#{tokenId},#{validTime},#{failureTime},#{createTime},#{updateTime},#{tokenDictIsDel})
+	</insert>
+	
+	<update id="update" parameterType="com.prosnav.model.TToken">
+		update t_token set TOKEN_ID=#{newTokenId}, 
+		UPDATE_TIME=#{updateTime},VALID_TIME=#{validTime},FAILURE_TIME=#{failureTime} where USER_ID = #{user.userId} and TOKEN_ID=#{tokenId}
+	</update>
+		
+	<delete id="delete" parameterType="com.prosnav.model.TToken">
+		update t_token set TOKEN_DICT_IS_DEL=#{tokenDictIsDel} where to_id = #{toId}
+	</delete>
+	
+	<!-- <update id="exit" parameterType="com.prosnav.model.TToken">
+		update t_token set TOKEN_DICT_IS_DEL=#{tokenDictIsDel} where USER_ID in 
+		(select USER_ID from t_user where LOGIN_NAME=#{user.loginName})
+	</update> -->
+	
+	<delete id="exit">
+		delete from t_token where USER_ID in 
+		(select USER_ID from t_user where LOGIN_NAME=#{user.loginName})
+	</delete>		
+</mapper>
